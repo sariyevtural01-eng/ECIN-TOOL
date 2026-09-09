@@ -2,116 +2,115 @@
 
 ## NMAP ASSISTANT TOOL
 
-ELCIN TOOL — Bash ilə hazırlanmış, Nmap istifadəsini daha rahat və sistemli etmək üçün yaradılmış terminal əsaslı köməkçi alətdir.
+ELCIN TOOL is a terminal-based Nmap assistant tool developed in Bash to make Nmap usage easier, faster, and more organized.
 
-Tool istifadəçiyə müxtəlif Nmap scan seçimlərini menyu vasitəsilə təqdim edir. İstifadəçi uyğun seçimi etdikdən sonra target IP və ya hostname daxil edir və tool uyğun Nmap əmrini icra edir.
+The tool provides users with different Nmap scan options through a menu-based interface. After selecting an option, the user enters a target IP address or hostname, and the tool executes the corresponding Nmap command.
 
-## Xüsusiyyətlər
+## Features
 
-* 10 əsas scan kateqoriyası
-* 100 fərqli Nmap seçimi
-* Menyu əsaslı istifadə
-* Target IP və hostname dəstəyi
+* 10 main scan categories
+* 100 different Nmap options
+* Menu-based interface
+* IP address and hostname support
 * Port scanning
-* Service və version detection
+* Service and version detection
 * OS detection
-* Firewall/filter yoxlamaları
+* Firewall and filter testing
 * NSE script scanning
 * Network discovery
-* Timing və sürət seçimləri
-* Müxtəlif scan kombinasiyaları
-* Sadə və istifadəsi rahat Bash interfeysi
+* Timing and speed options
+* Various scan combinations
+* Simple and user-friendly Bash interface
 
-## Kateqoriyalar
+## Categories
 
-1. Port Taramaları
-2. Servis / Versiya Məlumatı
-3. OS Təyini
-4. Firewall / Filter Kontrolleri
-5. NSE Script Taramaları
-6. Şəbəkə Kəşfi və Topologiya
-7. Sürət / Timing Ayarları
-8. Target Təyini
+1. Port Scanning
+2. Service / Version Detection
+3. OS Detection
+4. Firewall / Filter Testing
+5. NSE Script Scanning
+6. Network Discovery and Topology
+7. Timing / Speed Options
+8. Target Specification
 9. Spoofing / Fragmentation
-10. Kombinasiya Scanləri
+10. Combination Scans
 
-## Quraşdırma
+## Installation
 
-Repository-ni klonla:
+Clone the repository:
 
 ```bash
 git clone https://github.com/sariyevtural01-eng/ECIN-TOOL.git
 ```
 
-Layihə qovluğuna daxil ol:
+Enter the project directory:
 
 ```bash
 cd ECIN-TOOL
 ```
 
-Toola icra icazəsi ver:
+Give execution permission to the tool:
 
 ```bash
 chmod +x elcin.sh
 ```
 
-## İstifadə
+## Usage
 
-Toolu başlad:
+Start the tool:
 
 ```bash
 ./elcin.sh
 ```
 
-Daha sonra menyudan istədiyin kateqoriyanı və scan seçimini seç.
+Then select a category and scan option from the menu.
 
-Məsələn:
+Example:
 
 ```text
-1) Port Taramalari
-2) Servis / Versiya Melumati
-3) OS Tesbiti
+1) Port Scanning
+2) Service / Version Detection
+3) OS Detection
 ...
-99) Cixis
+99) Exit
 ```
 
-Seçim etdikdən sonra target daxil edilir və uyğun Nmap əmri icra olunur.
+After selecting an option, enter the target IP address or hostname. The tool will execute the corresponding Nmap command.
 
-## Tələblər
+## Requirements
 
 * Linux
 * Bash
 * Nmap
 
-Nmap-ın sistemdə olub-olmadığını yoxlamaq üçün:
+Check if Nmap is installed:
 
 ```bash
 nmap --version
 ```
 
-## Qeyd
+## Note
 
-Bəzi Nmap scan növləri administrator/root səlahiyyəti tələb edə bilər.
+Some Nmap scan types may require administrator/root privileges.
 
-Məsələn:
+For example:
 
 ```bash
 sudo ./elcin.sh
 ```
 
-## Təhlükəsizlik və qanuni istifadə
+## Legal and Ethical Use
 
-Bu tool yalnız sahib olduğunuz və ya test etməyə açıq şəkildə icazəniz olan sistemlərdə istifadə edilməlidir.
+This tool should only be used against systems that you own or have explicit permission to test.
 
-TryHackMe, Hack The Box və şəxsi laboratoriya mühitləri kimi icazəli test mühitlərində istifadə üçün uyğundur.
+It is suitable for authorized environments such as TryHackMe, Hack The Box, and personal security laboratories.
 
-İcazəsiz sistemləri scan etmək qanun pozuntusu ola bilər.
+Scanning systems without permission may be illegal.
 
-## Məqsəd
+## Purpose
 
-Bu layihənin əsas məqsədi Nmap komandalarını öyrənən istifadəçilər üçün müxtəlif scan seçimlərini bir menyu altında toplamaq və Nmap istifadəsini daha rahat etməkdir.
+The main purpose of this project is to help users who are learning Nmap by organizing different Nmap scan options into a single menu-based tool and making Nmap usage easier.
 
 ## License
 
-Bu layihə MIT License altında yayımlanır.
-=
+This project is released under the MIT License.
