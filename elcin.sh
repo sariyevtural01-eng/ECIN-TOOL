@@ -18,8 +18,8 @@ banner() {
 
 check_nmap() {
     if ! command -v nmap >/dev/null 2>&1; then
-        echo "[!] Nmap sistemde qurasdirilmiyib."
-        echo "[*] Qurasdirmag ucun:"
+        echo "[!] Nmap is not installed on the system."
+        echo "[*] To install Nmap:"
         echo "    sudo apt install nmap"
         exit 1
     fi
@@ -28,11 +28,11 @@ check_nmap() {
 target_input() {
     echo
     echo "============================================================"
-    read -rp "Target IP / Host daxil edin: " TARGET
+    read -rp "Enter Target IP / Host: " TARGET
 
     if [[ -z "$TARGET" ]]; then
-        echo "[!] Target bos ola bilmez."
-        read -rp "Davam etmek ucun Enter basin..."
+        echo "[!] Target cannot be empty."
+        read -rp "Press Enter to continue..."
         return 1
     fi
 
@@ -40,15 +40,15 @@ target_input() {
 }
 
 port_input() {
-    read -rp "Port(lar) daxil edin (mes: 22,80,443): " PORTS
+    read -rp "Enter Port(s) (e.g. 22,80,443): " PORTS
 
     if [[ -z "$PORTS" ]]; then
-        echo "[!] Port bos ola bilmez."
+        echo "[!] Port cannot be empty."
         return 1
     fi
 
     if [[ ! "$PORTS" =~ ^[0-9,-]+$ ]]; then
-        echo "[!] Port formatinda yalniz reqem, vergul ve tire istifade edin."
+        echo "[!] Port format can only contain numbers, commas, and hyphens."
         return 1
     fi
 
@@ -61,16 +61,16 @@ run_scan() {
 
     echo
     echo "------------------------------------------------------------"
-    echo "Secilmis funksiya:"
+    echo "Selected function:"
     echo "$DESCRIPTION"
     echo "------------------------------------------------------------"
     echo
-    echo "Nmap emri:"
+    echo "Nmap command:"
     printf 'nmap'
     printf ' %q' "$@"
     echo
     echo
-    echo "Scan basladilir..."
+    echo "Starting scan..."
     echo "------------------------------------------------------------"
     echo
 
@@ -78,11 +78,11 @@ run_scan() {
 
     echo
     echo "------------------------------------------------------------"
-    read -rp "Davam etmek ucun Enter basin..."
+    read -rp "Press Enter to continue..."
 }
 
 # ==========================================================
-# 1. PORT TARAMALARI
+# 1. PORT SCANNING
 # ==========================================================
 
 port_scans() {
@@ -90,60 +90,60 @@ port_scans() {
     while true; do
         banner
 
-        echo "================== PORT TARAMALARI =================="
+        echo "================== PORT SCANNING =================="
         echo
-        echo "[1] Sürətli port taramasi"
-        echo "    En çox istifade olunan portlari tez yoxlayir."
+        echo "[1] Fast port scan"
+        echo "    Quickly checks the most commonly used ports."
         echo
-        echo "[2] Müeyyen portlari tarama"
-        echo "    Seçilmis portlarin veziyyetini yoxlayir."
+        echo "[2] Scan specific ports"
+        echo "    Checks the status of selected ports."
         echo
-        echo "[3] Bütün portlari tarama"
-        echo "    1-65535 araligindaki TCP portlarini yoxlayir."
+        echo "[3] Scan all ports"
+        echo "    Checks TCP ports from 1-65535."
         echo
         echo "[4] TCP SYN scan"
-        echo "    TCP SYN paketleri ile portlari yoxlayir."
+        echo "    Checks ports using TCP SYN packets."
         echo
         echo "[5] TCP Connect scan"
-        echo "    Tam TCP bağlantisi yaradaraq portu yoxlayir."
+        echo "    Checks ports by establishing a full TCP connection."
         echo
         echo "[6] UDP scan"
-        echo "    UDP portlarini yoxlayir."
+        echo "    Checks UDP ports."
         echo
         echo "[7] FIN scan"
-        echo "    FIN flag esasli TCP scan aparir."
+        echo "    Performs a TCP scan using the FIN flag."
         echo
         echo "[8] Xmas scan"
-        echo "    TCP flag kombinasiyasi ile scan edir."
+        echo "    Performs a scan using a combination of TCP flags."
         echo
         echo "[9] Null scan"
-        echo "    TCP flag olmadan scan aparir."
+        echo "    Performs a scan without TCP flags."
         echo
         echo "[10] ACK scan"
-        echo "     Firewall/filter qaydalarini analiz etmeye komek edir."
+        echo "     Helps analyze firewall/filter rules."
         echo
-        echo "[0] Esas menyuya qayit"
+        echo "[0] Return to main menu"
         echo
         echo "======================================================"
 
-        read -rp "Seciminizi daxil edin: " CHOICE
+        read -rp "Enter your choice: " CHOICE
 
         case "$CHOICE" in
 
             1)
                 target_input || continue
-                run_scan "Sürətli port taramasi" -F "$TARGET"
+                run_scan "Fast port scan" -F "$TARGET"
                 ;;
 
             2)
                 target_input || continue
                 port_input || continue
-                run_scan "Müeyyen portlari tarama" -p "$PORTS" "$TARGET"
+                run_scan "Scan specific ports" -p "$PORTS" "$TARGET"
                 ;;
 
             3)
                 target_input || continue
-                run_scan "Bütün TCP portlarini tarama" -p- "$TARGET"
+                run_scan "Scan all TCP ports" -p- "$TARGET"
                 ;;
 
             4)
@@ -186,7 +186,7 @@ port_scans() {
                 ;;
 
             *)
-                echo "[!] Yanlis seçim."
+                echo "[!] Invalid choice."
                 sleep 1
                 ;;
         esac
@@ -194,7 +194,7 @@ port_scans() {
 }
 
 # ==========================================================
-# 2. SERVIS / VERSIYA
+# 2. SERVICE / VERSION
 # ==========================================================
 
 service_scans() {
@@ -202,95 +202,95 @@ service_scans() {
     while true; do
         banner
 
-        echo "================ SERVIS / VERSIYA =================="
+        echo "================ SERVICE / VERSION =================="
         echo
-        echo "[1] Servis ve versiya tesbiti"
-        echo "    Açiq portlarda işləyən servis ve versiyalari gösterir."
+        echo "[1] Service and version detection"
+        echo "    Shows services and versions running on open ports."
         echo
-        echo "[2] Aqressiv versiya tesbiti"
-        echo "    Daha geniş versiya yoxlamasi aparir."
+        echo "[2] Aggressive version detection"
+        echo "    Performs a more extensive version detection."
         echo
-        echo "[3] Default script + versiya"
-        echo "    Default NSE scriptleri ve versiya melumatini birlesdirir."
+        echo "[3] Default scripts + version"
+        echo "    Combines default NSE scripts with version detection."
         echo
-        echo "[4] Secilmis portda versiya"
-        echo "    Müeyyen portun servis melumatini gösterir."
+        echo "[4] Version detection on selected ports"
+        echo "    Shows service information for specific ports."
         echo
-        echo "[5] Web servisleri"
-        echo "    HTTP/HTTPS portlarini ve versiyalarini yoxlayir."
+        echo "[5] Web services"
+        echo "    Checks HTTP/HTTPS ports and their versions."
         echo
-        echo "[6] SSH servisi"
-        echo "    SSH servisinin versiyasini yoxlayir."
+        echo "[6] SSH service"
+        echo "    Checks the SSH service version."
         echo
-        echo "[7] FTP servisi"
-        echo "    FTP servisinin versiyasini yoxlayir."
+        echo "[7] FTP service"
+        echo "    Checks the FTP service version."
         echo
-        echo "[8] SMB servisi"
-        echo "    SMB servislerinin versiyasini yoxlayir."
+        echo "[8] SMB service"
+        echo "    Checks SMB service versions."
         echo
-        echo "[9] SMTP servisi"
-        echo "    SMTP servislerinin versiyasini yoxlayir."
+        echo "[9] SMTP service"
+        echo "    Checks SMTP service versions."
         echo
-        echo "[10] Servis + OS"
-        echo "     Servis versiyasi ve OS melumatini birlikde verir."
+        echo "[10] Service + OS"
+        echo "     Provides service version and OS information together."
         echo
-        echo "[0] Esas menyuya qayit"
+        echo "[0] Return to main menu"
         echo
         echo "====================================================="
 
-        read -rp "Seciminizi daxil edin: " CHOICE
+        read -rp "Enter your choice: " CHOICE
 
         case "$CHOICE" in
 
             1)
                 target_input || continue
-                run_scan "Servis ve versiya tesbiti" -sV "$TARGET"
+                run_scan "Service and version detection" -sV "$TARGET"
                 ;;
 
             2)
                 target_input || continue
-                run_scan "Aqressiv versiya tesbiti" -sV --version-intensity 9 "$TARGET"
+                run_scan "Aggressive version detection" -sV --version-intensity 9 "$TARGET"
                 ;;
 
             3)
                 target_input || continue
-                run_scan "Default script + versiya" -sC -sV "$TARGET"
+                run_scan "Default scripts + version" -sC -sV "$TARGET"
                 ;;
 
             4)
                 target_input || continue
                 port_input || continue
-                run_scan "Secilmis portda versiya" -sV -p "$PORTS" "$TARGET"
+                run_scan "Version detection on selected ports" -sV -p "$PORTS" "$TARGET"
                 ;;
 
             5)
                 target_input || continue
-                run_scan "Web servisleri" -sV -p 80,443 "$TARGET"
+                run_scan "Web services" -sV -p 80,443 "$TARGET"
                 ;;
 
             6)
                 target_input || continue
-                run_scan "SSH servisi" -sV -p 22 "$TARGET"
+                run_scan "SSH service" -sV -p 22 "$TARGET"
                 ;;
 
             7)
                 target_input || continue
-                run_scan "FTP servisi" -sV -p 21 "$TARGET"
+                run_scan "FTP service" -sV -p 21 "$TARGET"
                 ;;
 
             8)
                 target_input || continue
-                run_scan "SMB servisi" -sV -p 139,445 "$TARGET"
+                run_scan "SMB service" -sV -p 139,445 "$TARGET"
                 ;;
 
             9)
                 target_input || continue
-                run_scan "SMTP servisi" -sV -p 25,465,587 "$TARGET"
+                run_scan "SMTP service" -sV -p 25,465,587 "$TARGET"
                 ;;
 
             10)
                 target_input || continue
-                run_scan "Servis + OS" -sV -O "$TARGET"
+                run_scan "Service + OS" -sV -O "$TARGET"
                 ;;
 
             0)
@@ -298,7 +298,7 @@ service_scans() {
                 ;;
 
             *)
-                echo "[!] Yanlis seçim."
+                echo "[!] Invalid choice."
                 sleep 1
                 ;;
         esac
@@ -306,7 +306,7 @@ service_scans() {
 }
 
 # ==========================================================
-# 3. OS TESBITI
+# 3. OS DETECTION
 # ==========================================================
 
 os_detection() {
@@ -314,59 +314,59 @@ os_detection() {
     while true; do
         banner
 
-        echo "=================== OS TESBITI ====================="
+        echo "=================== OS DETECTION ====================="
         echo
-        echo "[1] OS tesbiti"
-        echo "    Hedef sistemin ehtimal olunan OS-unu müəyyən edir."
+        echo "[1] OS detection"
+        echo "    Attempts to identify the target operating system."
         echo
-        echo "[2] OS + servis versiyalari"
-        echo "    OS ve servis versiyalarini birlikde yoxlayir."
+        echo "[2] OS + service versions"
+        echo "    Checks OS and service versions together."
         echo
-        echo "[3] Aqressiv tesbit"
-        echo "    OS, servis, script ve traceroute melumatlari toplayir."
+        echo "[3] Aggressive detection"
+        echo "    Collects OS, service, script, and traceroute information."
         echo
         echo "[4] OS fingerprint"
-        echo "    OS fingerprint melumatlarini analiz edir."
+        echo "    Analyzes OS fingerprint information."
         echo
         echo "[5] OS + default scripts"
-        echo "    OS yoxlamasini default NSE scriptleri ile birlesdirir."
+        echo "    Combines OS detection with default NSE scripts."
         echo
         echo "[6] OS guess"
-        echo "    OS fingerprint melumatindan ehtimal verir."
+        echo "    Provides an OS guess based on fingerprinting."
         echo
         echo "[7] OS + traceroute"
-        echo "    OS melumati ile marşrutu birlikde gösterir."
+        echo "    Shows OS information together with the route."
         echo
         echo "[8] OS + version + scripts"
-        echo "    OS, servis ve NSE melumatlarini birlikde toplayir."
+        echo "    Collects OS, service, and NSE information together."
         echo
         echo "[9] Aggressive OS guess"
-        echo "    OS tesbitini daha geniş guess ile aparir."
+        echo "    Performs OS detection with a more extensive guess."
         echo
         echo "[10] OS + all TCP"
-        echo "     Bütün TCP portlari ile OS tesbitini birlesdirir."
+        echo "     Combines OS detection with all TCP ports."
         echo
-        echo "[0] Esas menyuya qayit"
+        echo "[0] Return to main menu"
         echo
         echo "====================================================="
 
-        read -rp "Seciminizi daxil edin: " CHOICE
+        read -rp "Enter your choice: " CHOICE
 
         case "$CHOICE" in
 
             1)
                 target_input || continue
-                run_scan "OS tesbiti" -O "$TARGET"
+                run_scan "OS detection" -O "$TARGET"
                 ;;
 
             2)
                 target_input || continue
-                run_scan "OS + servis versiyalari" -O -sV "$TARGET"
+                run_scan "OS + service versions" -O -sV "$TARGET"
                 ;;
 
             3)
                 target_input || continue
-                run_scan "Aqressiv tesbit" -A "$TARGET"
+                run_scan "Aggressive detection" -A "$TARGET"
                 ;;
 
             4)
@@ -409,7 +409,7 @@ os_detection() {
                 ;;
 
             *)
-                echo "[!] Yanlis seçim."
+                echo "[!] Invalid choice."
                 sleep 1
                 ;;
         esac
@@ -425,68 +425,68 @@ firewall_scans() {
     while true; do
         banner
 
-        echo "============= FIREWALL / FILTER KONTROLLERI ============="
+        echo "============= FIREWALL / FILTER TESTING ============="
         echo
         echo "[1] ACK scan"
-        echo "    Firewall/filter veziyyetini analiz etmeye komek edir."
+        echo "    Helps analyze firewall/filter behavior."
         echo
         echo "[2] SYN scan"
-        echo "    SYN esasli port yoxlamasi aparir."
+        echo "    Performs a SYN-based port scan."
         echo
         echo "[3] FIN scan"
-        echo "    FIN paketleri ile filter davranisini yoxlayir."
+        echo "    Checks filter behavior using FIN packets."
         echo
         echo "[4] Xmas scan"
-        echo "    Xmas flagleri ile filter davranisini yoxlayir."
+        echo "    Checks filter behavior using Xmas flags."
         echo
         echo "[5] Null scan"
-        echo "    Flag olmadan TCP scan aparir."
+        echo "    Performs a TCP scan without flags."
         echo
         echo "[6] TCP Connect"
-        echo "    Normal TCP connection ile portlari yoxlayir."
+        echo "    Checks ports using a normal TCP connection."
         echo
         echo "[7] Fragmented packets"
-        echo "    Paket fragmentasiyasi ile scan edir."
+        echo "    Performs a scan using packet fragmentation."
         echo
         echo "[8] Ping bypass"
-        echo "    Host discovery-i kecerek scan edir."
+        echo "    Skips host discovery and performs the scan."
         echo
         echo "[9] No ping + SYN"
-        echo "    Ping etmədən SYN scan aparir."
+        echo "    Performs a SYN scan without pinging the target."
         echo
         echo "[10] ACK + traceroute"
-        echo "     ACK scan ve marşrut melumatini birlikde verir."
+        echo "     Provides ACK scan and route information together."
         echo
-        echo "[0] Esas menyuya qayit"
+        echo "[0] Return to main menu"
         echo
-        echo "========================================================="
+        echo "====================================================="
 
-        read -rp "Seciminizi daxil edin: " CHOICE
+        read -rp "Enter your choice: " CHOICE
 
         case "$CHOICE" in
             1)
                 target_input || continue
-                run_scan "ACK firewall testi" -sA "$TARGET"
+                run_scan "ACK firewall test" -sA "$TARGET"
                 ;;
             2)
                 target_input || continue
-                run_scan "SYN firewall testi" -sS "$TARGET"
+                run_scan "SYN firewall test" -sS "$TARGET"
                 ;;
             3)
                 target_input || continue
-                run_scan "FIN firewall testi" -sF "$TARGET"
+                run_scan "FIN firewall test" -sF "$TARGET"
                 ;;
             4)
                 target_input || continue
-                run_scan "Xmas firewall testi" -sX "$TARGET"
+                run_scan "Xmas firewall test" -sX "$TARGET"
                 ;;
             5)
                 target_input || continue
-                run_scan "Null firewall testi" -sN "$TARGET"
+                run_scan "Null firewall test" -sN "$TARGET"
                 ;;
             6)
                 target_input || continue
-                run_scan "TCP Connect filter testi" -sT "$TARGET"
+                run_scan "TCP Connect filter test" -sT "$TARGET"
                 ;;
             7)
                 target_input || continue
@@ -508,7 +508,7 @@ firewall_scans() {
                 return
                 ;;
             *)
-                echo "[!] Yanlis seçim."
+                echo "[!] Invalid choice."
                 sleep 1
                 ;;
         esac
@@ -516,7 +516,7 @@ firewall_scans() {
 }
 
 # ==========================================================
-# 5. NSE SCRIPT TARAMALARI
+# 5. NSE SCRIPT SCANNING
 # ==========================================================
 
 nse_scans() {
@@ -524,43 +524,43 @@ nse_scans() {
     while true; do
         banner
 
-        echo "================ NSE SCRIPT TARAMALARI ================="
+        echo "================ NSE SCRIPT SCANNING ================="
         echo
         echo "[1] Default NSE"
-        echo "    Standart NSE scriptlerini işledir."
+        echo "    Runs the standard NSE scripts."
         echo
         echo "[2] Safe NSE"
-        echo "    Safe kateqoriyasindaki scriptleri işledir."
+        echo "    Runs scripts from the safe category."
         echo
         echo "[3] Discovery NSE"
-        echo "    Discovery scriptleri ile melumat toplayir."
+        echo "    Collects information using discovery scripts."
         echo
         echo "[4] Version + NSE"
-        echo "    Servis versiyasi ve NSE scriptlerini işledir."
+        echo "    Runs service version detection and NSE scripts."
         echo
         echo "[5] HTTP NSE"
-        echo "    HTTP ile bagli NSE scriptlerini işledir."
+        echo "    Runs NSE scripts related to HTTP."
         echo
         echo "[6] SSH NSE"
-        echo "    SSH ile bagli NSE scriptlerini işledir."
+        echo "    Runs NSE scripts related to SSH."
         echo
         echo "[7] SMB NSE"
-        echo "    SMB ile bagli NSE scriptlerini işledir."
+        echo "    Runs NSE scripts related to SMB."
         echo
         echo "[8] FTP NSE"
-        echo "    FTP ile bagli NSE scriptlerini işledir."
+        echo "    Runs NSE scripts related to FTP."
         echo
         echo "[9] DNS NSE"
-        echo "    DNS ile bagli NSE scriptlerini işledir."
+        echo "    Runs NSE scripts related to DNS."
         echo
         echo "[10] Vulnerability NSE"
-        echo "     Vulnerability kateqoriyasini işledir."
+        echo "     Runs scripts from the vulnerability category."
         echo
-        echo "[0] Esas menyuya qayit"
+        echo "[0] Return to main menu"
         echo
-        echo "========================================================="
+        echo "======================================================="
 
-        read -rp "Seciminizi daxil edin: " CHOICE
+        read -rp "Enter your choice: " CHOICE
 
         case "$CHOICE" in
             1)
@@ -607,7 +607,7 @@ nse_scans() {
                 return
                 ;;
             *)
-                echo "[!] Yanlis seçim."
+                echo "[!] Invalid choice."
                 sleep 1
                 ;;
         esac
@@ -615,7 +615,7 @@ nse_scans() {
 }
 
 # ==========================================================
-# 6. AG KESFI VE TOPOLOGIYA
+# 6. NETWORK DISCOVERY AND TOPOLOGY
 # ==========================================================
 
 network_discovery() {
@@ -623,43 +623,43 @@ network_discovery() {
     while true; do
         banner
 
-        echo "================ AG KESFI VE TOPOLOGIYA ================="
+        echo "============= NETWORK DISCOVERY AND TOPOLOGY ============="
         echo
         echo "[1] Host discovery"
-        echo "    Aktiv hostlari aşkar etmeye komek edir."
+        echo "    Helps identify active hosts."
         echo
         echo "[2] Ping scan"
-        echo "    Cavab veren hostlari yoxlayir."
+        echo "    Checks hosts that respond to discovery probes."
         echo
         echo "[3] ARP discovery"
-        echo "    Lokal şebekede ARP ile hostlari aşkar edir."
+        echo "    Discovers hosts on a local network using ARP."
         echo
         echo "[4] ICMP echo discovery"
-        echo "    ICMP Echo ile hostlari yoxlayir."
+        echo "    Checks hosts using ICMP Echo requests."
         echo
         echo "[5] TCP SYN discovery"
-        echo "    TCP SYN ile host discovery edir."
+        echo "    Performs host discovery using TCP SYN packets."
         echo
         echo "[6] TCP ACK discovery"
-        echo "    TCP ACK ile host discovery edir."
+        echo "    Performs host discovery using TCP ACK packets."
         echo
         echo "[7] UDP discovery"
-        echo "    UDP paketleri ile host discovery edir."
+        echo "    Performs host discovery using UDP packets."
         echo
-        echo "[8] Discovery + version"
-        echo "    Host discovery ve servis melumatini birlikde yoxlayir."
+        echo "[8] Version detection"
+        echo "    Checks service information using version detection."
         echo
         echo "[9] Traceroute"
-        echo "    Hedefe gedən marşrutu gösterir."
+        echo "    Shows the route to the target."
         echo
         echo "[10] Version + traceroute"
-        echo "     Servis versiyasi ve marşrutu gösterir."
+        echo "     Shows service versions and the route."
         echo
-        echo "[0] Esas menyuya qayit"
+        echo "[0] Return to main menu"
         echo
-        echo "========================================================="
+        echo "==========================================================="
 
-        read -rp "Seciminizi daxil edin: " CHOICE
+        read -rp "Enter your choice: " CHOICE
 
         case "$CHOICE" in
             1)
@@ -692,7 +692,7 @@ network_discovery() {
                 ;;
             8)
                 target_input || continue
-                run_scan "Discovery + version" -sV "$TARGET"
+                run_scan "Version detection" -sV "$TARGET"
                 ;;
             9)
                 target_input || continue
@@ -706,7 +706,7 @@ network_discovery() {
                 return
                 ;;
             *)
-                echo "[!] Yanlis seçim."
+                echo "[!] Invalid choice."
                 sleep 1
                 ;;
         esac
@@ -714,7 +714,7 @@ network_discovery() {
 }
 
 # ==========================================================
-# 7. HIZ / ZAMANLAMA
+# 7. TIMING / SPEED
 # ==========================================================
 
 timing_scans() {
@@ -722,43 +722,43 @@ timing_scans() {
     while true; do
         banner
 
-        echo "================ HIZ / ZAMANLAMA ======================="
+        echo "================ TIMING / SPEED ========================"
         echo
         echo "[1] Paranoid timing - T0"
-        echo "    En yavaş timing rejimlerinden biridir."
+        echo "    One of the slowest timing modes."
         echo
         echo "[2] Sneaky timing - T1"
-        echo "    Yavaş scan rejimidir."
+        echo "    A slow scanning mode."
         echo
         echo "[3] Polite timing - T2"
-        echo "    Şebekeye daha az yük vermeye çalışir."
+        echo "    Attempts to reduce the load on the network."
         echo
         echo "[4] Normal timing - T3"
-        echo "    Standart timing rejimidir."
+        echo "    Standard timing mode."
         echo
         echo "[5] Aggressive timing - T4"
-        echo "    Daha sürətli scan aparir."
+        echo "    Performs faster scans."
         echo
         echo "[6] Insane timing - T5"
-        echo "    Çox aqressiv sürət rejimidir."
+        echo "    Very aggressive speed mode."
         echo
         echo "[7] Minimum rate"
-        echo "    Minimum paket sürətini təyin edir."
+        echo "    Sets the minimum packet rate."
         echo
         echo "[8] Maximum rate"
-        echo "    Maksimum paket sürətini məhdudlaşdırır."
+        echo "    Limits the maximum packet rate."
         echo
         echo "[9] Host timeout"
-        echo "    Host üçün timeout təyin edir."
+        echo "    Sets a timeout for the host."
         echo
         echo "[10] Aggressive + version"
-        echo "     T4 ve servis versiya tesbitini birlesdirir."
+        echo "     Combines T4 timing with service version detection."
         echo
-        echo "[0] Esas menyuya qayit"
+        echo "[0] Return to main menu"
         echo
         echo "========================================================="
 
-        read -rp "Seciminizi daxil edin: " CHOICE
+        read -rp "Enter your choice: " CHOICE
 
         case "$CHOICE" in
             1)
@@ -805,7 +805,7 @@ timing_scans() {
                 return
                 ;;
             *)
-                echo "[!] Yanlis seçim."
+                echo "[!] Invalid choice."
                 sleep 1
                 ;;
         esac
@@ -813,7 +813,7 @@ timing_scans() {
 }
 
 # ==========================================================
-# 8. HEDEF BELIRLEME
+# 8. TARGET SPECIFICATION
 # ==========================================================
 
 target_scans() {
@@ -821,43 +821,43 @@ target_scans() {
     while true; do
         banner
 
-        echo "================ HEDEF BELIRLEME ======================="
+        echo "================ TARGET SPECIFICATION ================="
         echo
         echo "[1] Single host"
-        echo "    Bir IP veya hostname tarayir."
+        echo "    Scans one IP address or hostname."
         echo
         echo "[2] CIDR network"
-        echo "    CIDR formatinda şebekeni tarayir."
+        echo "    Scans a network in CIDR format."
         echo
         echo "[3] IP range"
-        echo "    IP araligini tarayir."
+        echo "    Scans an IP address range."
         echo
         echo "[4] Multiple targets"
-        echo "    Bir neçe targeti birlikde tarayir."
+        echo "    Scans multiple targets together."
         echo
         echo "[5] Hostname + version"
-        echo "    Hostname üzerinden servis versiyasini yoxlayir."
+        echo "    Checks service versions using a hostname."
         echo
         echo "[6] IPv6 target"
-        echo "    IPv6 hədəfi tarayir."
+        echo "    Scans an IPv6 target."
         echo
         echo "[7] Exclude host"
-        echo "    Seçilmiş hostu scan-dan çıxarır."
+        echo "    Excludes a selected host from the scan."
         echo
         echo "[8] Target list file"
-        echo "    Faylda olan targetleri tarayir."
+        echo "    Scans targets listed in a file."
         echo
         echo "[9] Random targets"
-        echo "    Random IP-lər seçərək scan aparir."
+        echo "    Performs a scan using randomly selected IPs."
         echo
         echo "[10] Network + version"
-        echo "     Şebekede servis versiyalarini yoxlayir."
+        echo "     Checks service versions on the specified target/network."
         echo
-        echo "[0] Esas menyuya qayit"
+        echo "[0] Return to main menu"
         echo
         echo "========================================================="
 
-        read -rp "Seciminizi daxil edin: " CHOICE
+        read -rp "Enter your choice: " CHOICE
 
         case "$CHOICE" in
 
@@ -877,11 +877,11 @@ target_scans() {
                 ;;
 
             4)
-                read -rp "Targetleri daxil edin (mes: 192.168.1.1 192.168.1.2): " -a TARGETS
+                read -rp "Enter targets (e.g. 192.168.1.1 192.168.1.2): " -a TARGETS
 
                 if [[ ${#TARGETS[@]} -eq 0 ]]; then
-                    echo "[!] Target daxil edilmeyib."
-                    read -rp "Enter basin..."
+                    echo "[!] No targets entered."
+                    read -rp "Press Enter..."
                     continue
                 fi
 
@@ -900,11 +900,11 @@ target_scans() {
 
             7)
                 target_input || continue
-                read -rp "Exclude ediləcək host: " EXCLUDE
+                read -rp "Host to exclude: " EXCLUDE
 
                 if [[ -z "$EXCLUDE" ]]; then
-                    echo "[!] Exclude host bos ola bilmez."
-                    read -rp "Enter basin..."
+                    echo "[!] Exclude host cannot be empty."
+                    read -rp "Press Enter..."
                     continue
                 fi
 
@@ -912,11 +912,11 @@ target_scans() {
                 ;;
 
             8)
-                read -rp "Target faylinin yolu: " TARGET_FILE
+                read -rp "Path to target list file: " TARGET_FILE
 
                 if [[ ! -f "$TARGET_FILE" ]]; then
-                    echo "[!] Fayl tapilmadi."
-                    read -rp "Enter basin..."
+                    echo "[!] File not found."
+                    read -rp "Press Enter..."
                     continue
                 fi
 
@@ -924,11 +924,11 @@ target_scans() {
                 ;;
 
             9)
-                read -rp "Neçə random target: " COUNT
+                read -rp "Number of random targets: " COUNT
 
                 if [[ ! "$COUNT" =~ ^[0-9]+$ ]] || (( COUNT < 1 )); then
-                    echo "[!] Musbet reqem daxil edin."
-                    read -rp "Enter basin..."
+                    echo "[!] Enter a positive number."
+                    read -rp "Press Enter..."
                     continue
                 fi
 
@@ -945,7 +945,7 @@ target_scans() {
                 ;;
 
             *)
-                echo "[!] Yanlis seçim."
+                echo "[!] Invalid choice."
                 sleep 1
                 ;;
         esac
@@ -964,40 +964,40 @@ spoof_scans() {
         echo "=============== SPOOFING / FRAGMENTATION ==============="
         echo
         echo "[1] Fragment packets"
-        echo "    Paketleri fragmentlere bölür."
+        echo "    Splits packets into fragments."
         echo
         echo "[2] Double fragment"
-        echo "    Daha kiçik fragmentlərdən istifadə edir."
+        echo "    Uses smaller packet fragments."
         echo
         echo "[3] Decoy scan"
-        echo "    Decoy ünvanlari ile scan görüntüsü yaradir."
+        echo "    Uses decoy addresses during the scan."
         echo
         echo "[4] Decoy + SYN"
-        echo "    Decoy ve SYN scan birlikde işledilir."
+        echo "    Combines decoys with a SYN scan."
         echo
         echo "[5] Decoy + version"
-        echo "    Decoy ve version detection birlikde işleyir."
+        echo "    Combines decoys with version detection."
         echo
         echo "[6] Source port"
-        echo "    Mənbə portunu təyin edir."
+        echo "    Specifies the source port."
         echo
         echo "[7] Fragment + SYN"
-        echo "    Fragment edilmiş SYN scan aparir."
+        echo "    Performs a fragmented SYN scan."
         echo
         echo "[8] Fragment + version"
-        echo "    Fragment ve version detection birlikde işleyir."
+        echo "    Combines fragmentation with version detection."
         echo
         echo "[9] Custom decoys"
-        echo "    İstifadəçi decoy parametri daxil edir."
+        echo "    Allows the user to enter a custom decoy parameter."
         echo
         echo "[10] Fragment + traceroute"
-        echo "     Fragment scan ve traceroute birlikde işleyir."
+        echo "     Combines fragmented scanning with traceroute."
         echo
-        echo "[0] Esas menyuya qayit"
+        echo "[0] Return to main menu"
         echo
         echo "========================================================="
 
-        read -rp "Seciminizi daxil edin: " CHOICE
+        read -rp "Enter your choice: " CHOICE
 
         case "$CHOICE" in
 
@@ -1031,8 +1031,8 @@ spoof_scans() {
                 read -rp "Source port (1-65535): " SPORT
 
                 if [[ ! "$SPORT" =~ ^[0-9]+$ ]] || (( SPORT < 1 || SPORT > 65535 )); then
-                    echo "[!] Port 1-65535 araliginda olmalidir."
-                    read -rp "Enter basin..."
+                    echo "[!] Port must be between 1-65535."
+                    read -rp "Press Enter..."
                     continue
                 fi
 
@@ -1051,11 +1051,11 @@ spoof_scans() {
 
             9)
                 target_input || continue
-                read -rp "Decoy parametri (mes: RND:5): " DECOYS
+                read -rp "Decoy parameter (e.g. RND:5): " DECOYS
 
                 if [[ -z "$DECOYS" ]]; then
-                    echo "[!] Decoy bos ola bilmez."
-                    read -rp "Enter basin..."
+                    echo "[!] Decoy cannot be empty."
+                    read -rp "Press Enter..."
                     continue
                 fi
 
@@ -1072,7 +1072,7 @@ spoof_scans() {
                 ;;
 
             *)
-                echo "[!] Yanlis seçim."
+                echo "[!] Invalid choice."
                 sleep 1
                 ;;
         esac
@@ -1080,7 +1080,7 @@ spoof_scans() {
 }
 
 # ==========================================================
-# 10. KOMBINASIYA SCANLERI
+# 10. COMBINATION SCANS
 # ==========================================================
 
 combination_scans() {
@@ -1088,43 +1088,43 @@ combination_scans() {
     while true; do
         banner
 
-        echo "================ KOMBINASIYA SCANLERI =================="
+        echo "================ COMBINATION SCANS =================="
         echo
         echo "[1] SYN + Version"
-        echo "    SYN scan ve servis versiyasini birlesdirir."
+        echo "    Combines SYN scanning with service version detection."
         echo
         echo "[2] SYN + OS"
-        echo "    SYN scan ve OS tesbitini birlesdirir."
+        echo "    Combines SYN scanning with OS detection."
         echo
         echo "[3] SYN + OS + Version"
-        echo "    SYN, OS ve servis melumatlarini toplayir."
+        echo "    Collects SYN, OS, and service information."
         echo
         echo "[4] Aggressive scan"
-        echo "    Geniş enumeration scanidir."
+        echo "    Performs a broad enumeration scan."
         echo
         echo "[5] SYN + Default scripts"
-        echo "    SYN ve default NSE scriptlerini birlesdirir."
+        echo "    Combines SYN scanning with default NSE scripts."
         echo
         echo "[6] All TCP + Version"
-        echo "    Bütün TCP portlari ve versiyalari yoxlayir."
+        echo "    Checks all TCP ports and service versions."
         echo
         echo "[7] All TCP + OS"
-        echo "    Bütün TCP portlari ve OS tesbitini birlesdirir."
+        echo "    Combines all TCP ports with OS detection."
         echo
         echo "[8] UDP + Version"
-        echo "    UDP portlari ve servis versiyalarini yoxlayir."
+        echo "    Checks UDP ports and service versions."
         echo
         echo "[9] Full enumeration"
-        echo "    OS, version, scripts ve traceroute melumatlarini verir."
+        echo "    Provides OS, version, scripts, and traceroute information."
         echo
         echo "[10] Fast enumeration"
-        echo "     Sürətli port ve versiya enumeration aparir."
+        echo "     Performs fast port and version enumeration."
         echo
-        echo "[0] Esas menyuya qayit"
+        echo "[0] Return to main menu"
         echo
-        echo "========================================================="
+        echo "======================================================="
 
-        read -rp "Seciminizi daxil edin: " CHOICE
+        read -rp "Enter your choice: " CHOICE
 
         case "$CHOICE" in
 
@@ -1183,7 +1183,7 @@ combination_scans() {
                 ;;
 
             *)
-                echo "[!] Yanlis seçim."
+                echo "[!] Invalid choice."
                 sleep 1
                 ;;
         esac
@@ -1191,7 +1191,7 @@ combination_scans() {
 }
 
 # ==========================================================
-# ESAS MENU
+# MAIN MENU
 # ==========================================================
 
 main_menu() {
@@ -1202,22 +1202,22 @@ main_menu() {
 
         banner
 
-        echo "[1]  Port Taramalari"
-        echo "[2]  Servis / Versiya Melumati"
-        echo "[3]  OS Tesbiti"
-        echo "[4]  Firewall / Filter Kontrolleri"
-        echo "[5]  NSE Script Taramalari"
-        echo "[6]  Ag Kesfi ve Topologiya"
-        echo "[7]  Hiz / Zamanlama Ayarlari"
-        echo "[8]  Hedef Belirleme"
+        echo "[1]  Port Scanning"
+        echo "[2]  Service / Version Detection"
+        echo "[3]  OS Detection"
+        echo "[4]  Firewall / Filter Testing"
+        echo "[5]  NSE Script Scanning"
+        echo "[6]  Network Discovery and Topology"
+        echo "[7]  Timing / Speed Options"
+        echo "[8]  Target Specification"
         echo "[9]  Spoofing / Fragmentation"
-        echo "[10] Kombinasiya Scanleri"
+        echo "[10] Combination Scans"
         echo
-        echo "[99] Cixis"
+        echo "[99] Exit"
         echo
         echo "============================================================"
 
-        read -rp "Seciminizi daxil edin: " MENU
+        read -rp "Enter your choice: " MENU
 
         case "$MENU" in
 
@@ -1266,7 +1266,7 @@ main_menu() {
                 echo
                 echo "============================================================"
                 echo "                         ELCIN TOOL"
-                echo "                    Proqramdan cixilir..."
+                echo "                       Exiting program..."
                 echo "============================================================"
                 echo
                 exit 0
@@ -1274,7 +1274,7 @@ main_menu() {
 
             *)
                 echo
-                echo "[!] Yanlis seçim."
+                echo "[!] Invalid choice."
                 sleep 1
                 ;;
         esac
